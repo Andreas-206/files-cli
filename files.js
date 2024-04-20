@@ -3,7 +3,6 @@ import fs from 'node:fs/promises';
 import chalk from 'chalk';
 import validateData from './utils/validateData.js';
 import { checkExtention } from './utils/checkExtention.js';
-import { readFile } from 'node:fs';
 
 const dirPath = path.resolve('files');
 
