@@ -7,59 +7,65 @@ import { checkExtention } from './utils/checkExtention.js';
 const dirPath = path.resolve('files');
 
 export async function createFile(fileName, content) {
-    const file = {
-        fileName,
-        content,
-    };
-    const { error } = validateData(file);
-    if (error) {
-        const errorDetails = error.details[0].path[0];
-        console.log(chalk.red(`Please specify ${errorDetails} parameter.`));
-    }
+  const file = {
+    fileName,
+    content,
+  };
+  const { error } = validateData(file);
+  if (error) {
+    const errorDetails = error.details[0].path[0];
+    console.log(chalk.red(`Please specify ${errorDetails} parameter.`));
+  }
 
-    const { extention, check } = checkExtention(fileName);
+  const { extention, check } = checkExtention(fileName);
 
-    if (!check) {
-        console.log(
-            chalk.red(`Sorry APP doesn't  support with ${extention} extention.`)
-        );
-    }
-    const pathNewFile = path.resolve('files', fileName);
-    try {
-        await fs.writeFile(pathNewFile, content, 'utf-8');
-        console.log(chalk.green('File is created successfuly'));
-    } catch (error) {
-        console.log(error);
-    }
+  if (!check) {
+    console.log(
+      chalk.red(`Sorry APP doesn't  support with ${extention} extention.`)
+    );
+  }
+  const pathNewFile = path.resolve('files', fileName);
+  try {
+    await fs.writeFile(pathNewFile, content, 'utf-8');
+    console.log(chalk.green('File is created successfuly'));
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function getFiles() {
-    const dir = await fs.readdir(dirPath);
+  const dir = await fs.readdir(dirPath);
 
-    if (dir.length === 0) {
-        console.log(chalk.red('There are no files at directory!'));
-        return;
-    }
+  if (dir.length === 0) {
+    console.log(chalk.red('There are no files at directory!'));
+    return;
+  }
 
-    dir.forEach((file) => console.log(file));
+  dir.forEach((file) => console.log(file));
 }
 
 export async function getFileInfo(fileName) {
-    const dir = await fs.readdir(dirPath);
+  const dir = await fs.readdir(dirPath);
 
-    if (!dir.includes(fileName)) {
-        console.log(chalk.red(`There is no file!`));
-        return;
-    }
+  if (!dir.includes(fileName)) {
+    console.log(chalk.red(`There is no file!`));
+    return;
+  }
 
-    const filePath = path.resolve(dirPath, fileName);
-    const data = await fs.readFile(filePath, 'utf-8');
+  const filePath = path.resolve(dirPath, fileName);
+  const data = await fs.readFile(filePath, 'utf-8');
 
-    const fileInfo = {
-        content: data,
-        // name  (module path)
-        // extension (module path)
-        //createdAt (module fs)
-    };
-    console.log(fileInfo);
+  //+++
+  const pathData = path.parse(filePath);
+  const fileStat = await fs.lstat(filePath);
+
+  const fileInfo = {
+    content: data,
+
+    //+++ hw
+    name: pathData.name,
+    extension: pathData.ext,
+    createdAt: fileStat.birthtime,
+  };
+  console.log(fileInfo);
 }
